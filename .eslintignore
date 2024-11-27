@@ -1,0 +1,10 @@
+node_modules
+build
+@types
+logs
+
+.*env
+
+# metadata
+*/thumb.db
+*/.DS_Store

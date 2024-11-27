@@ -1,0 +1,14 @@
+# .gitignore
+node_modules/
+build/
+frontend/
+.DS_store
+.*env
+
+.tsbuildInfo
+FILE_ROOT/
+
+tsconfig.tsbuildinfo
+
+# typedoc api 문서
+docs

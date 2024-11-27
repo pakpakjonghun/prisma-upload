@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id         String   @id @default(uuid()) // 고유 ID
+  size       Int      // 파일 크기
+  filename   String   // 원본 파일 이름
+  mimetype   String   // MIME 타입
+  path       String   // 파일 실제 경로
+  isMapped   Boolean  @default(false)      // 매핑 여부
+  mappedTo   String?  // 매핑된 데이터 ID
+  createdAt  DateTime @default(now())      // 생성 날짜
+}
