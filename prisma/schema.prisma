@@ -22,4 +22,18 @@ model File {
   isMapped   Boolean  @default(false)      // 매핑 여부
   mappedTo   String?  // 매핑된 데이터 ID
   createdAt  DateTime @default(now())      // 생성 날짜
+
+  // 1:N 관계 설정
+  documents  Document[]  // 여러 Document와 연결 가능
+}
+
+// 데이터 예시
+model Document {
+  id         String   @id @default(uuid()) // 고유 ID
+  title      String   // 문서 제목
+  content    String   // 문서 내용
+  file       File?     @relation(fields: [fileId], references: [id]) // 파일 매핑 (필수)
+  fileId    String? // nullable
+  createdAt  DateTime @default(now())      // 생성 날짜
+  updatedAt  DateTime @updatedAt           // 수정 날짜
 }

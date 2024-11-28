@@ -8,6 +8,8 @@ import fs from "fs";
  * 
  * Prisma Client Extensions는 확장된 객체 간 독립성을 보장한다. 
  * 즉, 기본 Prisma 객체를 기반으로 확장된 객체 A와, 이를 다시 확장한 B는 명확히 구분되며, 서로 다른 동작을 수행할 수 있다.
+ * 
+ * $transaction을 쓰면 하당 객체 자체가 아니므로 이 extends 내는 호출이 안 된다.
  */
 
 const prisma = new PrismaClient().$extends({
