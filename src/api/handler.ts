@@ -4,14 +4,13 @@ import fs from "fs";
 import { getRootPath } from "../function/file/utility";
 import { getDynamicMulterHandler } from "../function/file/createMulter";
 
-import fileChainingPrisma from '../prisma/prismaClient';  // 파일 체이닝 (데이터 삭제 시 해당하는 파일 삭제 처리가 자동으로 이뤄지는)
+import fileChainingPrisma from "../prisma/prismaClient"; // 파일 체이닝 (데이터 삭제 시 해당하는 파일 삭제 처리가 자동으로 이뤄지는)
 import { deleteFilesWithTransaction } from "../function/file/delete";
 import { searchFiles } from "src/function/file/find";
 import { createDocumentWithFile } from "src/function/data/create";
 import { searchData } from "src/function/data/find";
 import { updateDocumentFile } from "src/function/data/update";
 import { deleteDocumentsAndFiles } from "src/function/data/delete";
-
 
 /**
  * @function getData
@@ -21,25 +20,22 @@ export const getData = async (req: Request, res: Response): Promise<void> => {
     try {
         const { title, startDate, endDate, sortBy, order, page, limit } = req.query;
 
-        console.log("query ; ", req.query);
-
         // 검색 로직 호출
         const data = await searchData({
             title: title as string,
             startDate: startDate as string,
             endDate: endDate as string,
-            sortBy: sortBy as 'createdAt' | 'title',
-            order: order as 'asc' | 'desc',
+            sortBy: sortBy as "createdAt" | "title",
+            order: order as "asc" | "desc",
             page: page ? parseInt(page as string, 10) : 1,
-            limit: limit ? parseInt(limit as string, 10) : 10,
+            limit: limit ? parseInt(limit as string, 10) : 10
         });
         res.status(200).json(data);
     } catch (err: any) {
-        console.error('Error fetching files:', err.message);
-        res.status(500).json({ error: 'Failed to fetch files', details: err.message });
+        console.error("Error fetching files:", err.message);
+        res.status(500).json({ error: "Failed to fetch files", details: err.message });
     }
 };
-
 
 /**
  * @function createData
@@ -51,11 +47,10 @@ export const createData = async (req: Request, res: Response): Promise<void> => 
         const data = await createDocumentWithFile({ title, content }, fileId);
         res.status(201).json(data);
     } catch (err: any) {
-        console.error('Error fetching files:', err.message);
-        res.status(500).json({ error: 'Failed to fetch files', details: err.message });
+        console.error("Error fetching files:", err.message);
+        res.status(500).json({ error: "Failed to fetch files", details: err.message });
     }
 };
-
 
 /**
  * @function updateData
@@ -67,11 +62,10 @@ export const updateData = async (req: Request, res: Response): Promise<void> => 
         const data = await updateDocumentFile(documentId, title, content, fileId);
         res.status(201).json(data);
     } catch (err: any) {
-        console.error('Error fetching files:', err.message);
-        res.status(500).json({ error: 'Failed to fetch files', details: err.message });
+        console.error("Error fetching files:", err.message);
+        res.status(500).json({ error: "Failed to fetch files", details: err.message });
     }
 };
-
 
 /**
  * @function updateData
@@ -83,18 +77,16 @@ export const deleteData = async (req: Request, res: Response): Promise<void> => 
         const documentIdList: string[] = [];
         if (!Array.isArray(documentId)) {
             documentIdList.push(documentId);
-        }
-        else {
+        } else {
             documentIdList.push(...documentId);
         }
         const data = await deleteDocumentsAndFiles(documentIdList);
         res.status(201).json(data);
     } catch (err: any) {
-        console.error('Error fetching files:', err.message);
-        res.status(500).json({ error: 'Failed to fetch files', details: err.message });
+        console.error("Error fetching files:", err.message);
+        res.status(500).json({ error: "Failed to fetch files", details: err.message });
     }
 };
-
 
 /**
  * @function getFiles
@@ -106,22 +98,21 @@ export const getFiles = async (req: Request, res: Response): Promise<void> => {
 
         // 검색 로직 호출
         const files = await searchFiles({
-            isMapped: isMapped ? isMapped === 'true' : undefined,
+            isMapped: isMapped ? isMapped === "true" : undefined,
             startDate: startDate as string,
             endDate: endDate as string,
-            sortBy: sortBy as 'createdAt' | 'size',
-            order: order as 'asc' | 'desc',
+            sortBy: sortBy as "createdAt" | "size",
+            order: order as "asc" | "desc",
             page: page ? parseInt(page as string, 10) : 1,
-            limit: limit ? parseInt(limit as string, 10) : 10,
+            limit: limit ? parseInt(limit as string, 10) : 10
         });
 
         res.status(200).json(files);
     } catch (err: any) {
-        console.error('Error fetching files:', err.message);
-        res.status(500).json({ error: 'Failed to fetch files', details: err.message });
+        console.error("Error fetching files:", err.message);
+        res.status(500).json({ error: "Failed to fetch files", details: err.message });
     }
 };
-
 
 /**
  * @function uploadFile
@@ -143,7 +134,7 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
             return;
         }
         try {
-            // MIME 타입 검증 
+            // MIME 타입 검증
             const mimetype = file.mimetype;
 
             // 파일 메타데이터 저장
@@ -153,8 +144,8 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
                     size: file.size,
                     mimetype: mimetype,
                     path: file.path,
-                    isMapped: false,
-                },
+                    isMapped: false
+                }
             });
             res.status(201).json({ success: true, file: savedFile });
         } catch (e: any) {
@@ -167,7 +158,6 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
     });
 };
 
-
 /**
  * @function deleteFilesWithTransaction
  * @description * 파일 삭제와 데이터베이스 삭제를 트랜잭션 단위로 처리
@@ -177,15 +167,15 @@ export const deleteFiles = async (req: Request, res: Response): Promise<void> =>
 
     try {
         await deleteFilesWithTransaction(fileIds);
-        console.log('Transaction completed successfully');
-        res.status(200).json({ message: 'Files deleted successfully' });
+        console.log("Transaction completed successfully");
+        res.status(200).json({ message: "Files deleted successfully" });
     } catch (err: any) {
         // 클라이언트로 반환할 에러 메시지 설정
-        const errorMessage = err.message || 'Unknown error occurred during transaction';
+        const errorMessage = err.message || "Unknown error occurred during transaction";
 
-        console.error('Transaction failed:', err.meerrorMessage);
+        console.error("Transaction failed:", err.meerrorMessage);
         res.status(500).json({
-            error: 'Transaction failed',
+            error: "Transaction failed",
             details: errorMessage
         });
     }

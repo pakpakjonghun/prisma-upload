@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -9,14 +9,11 @@ const prisma = new PrismaClient();
  * @param fileId - 매핑할 파일 ID
  * @returns 생성된 Document 객체
  */
-export const createDocumentWithFile = async (
-    documentData: { title: string; content: string },
-    fileId: string
-) => {
+export const createDocumentWithFile = async (documentData: { title: string; content: string }, fileId: string) => {
     return prisma.$transaction(async (tx) => {
         // 매핑하려는 파일 확인
         const file = await tx.file.findUnique({
-            where: { id: fileId },
+            where: { id: fileId }
         });
 
         // 파일이 없거나 매핑된 경우라면 없앤다.
@@ -32,8 +29,8 @@ export const createDocumentWithFile = async (
         const document = await tx.document.create({
             data: {
                 ...documentData,
-                fileId, // 매핑할 파일 ID
-            },
+                id: fileId // 매핑할 파일 ID
+            }
         });
 
         // File 업데이트 (isMapped: true)
@@ -41,8 +38,8 @@ export const createDocumentWithFile = async (
             where: { id: fileId },
             data: {
                 isMapped: true,
-                mappedTo: document.id, // mappedTo에 문서 ID 설정
-            },
+                mappedTo: document.id // mappedTo에 문서 ID 설정
+            }
         });
 
         return document;

@@ -1,18 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const updateDocumentFile = async (
-    documentId: string,
-    title?: string,
-    content?: string,
-    newFileId?: string
-) => {
+export const updateDocumentFile = async (documentId: string, title?: string, content?: string, newFileId?: string) => {
     return prisma.$transaction(async (tx) => {
         // Document 확인
         console.log("documentId: ", documentId);
         const document = await tx.document.findUnique({
-            where: { id: documentId },
+            where: { id: documentId }
         });
         if (!document) {
             throw new Error(`Document with ID ${documentId} not found`);
@@ -21,7 +16,7 @@ export const updateDocumentFile = async (
         // 새 파일 매핑 처리
         if (newFileId) {
             const newFile = await tx.file.findUnique({
-                where: { id: newFileId },
+                where: { id: newFileId }
             });
 
             if (!newFile) {
@@ -33,13 +28,13 @@ export const updateDocumentFile = async (
             }
 
             // 기존 파일 상태 업데이트
-            if (document.fileId) {
+            if (document.id) {
                 await tx.file.update({
-                    where: { id: document.fileId },
+                    where: { id: document.id },
                     data: {
                         isMapped: false,
-                        mappedTo: null,
-                    },
+                        mappedTo: null
+                    }
                 });
             }
 
@@ -48,8 +43,8 @@ export const updateDocumentFile = async (
                 where: { id: newFileId },
                 data: {
                     isMapped: true,
-                    mappedTo: documentId,
-                },
+                    mappedTo: documentId
+                }
             });
         }
 
@@ -59,17 +54,16 @@ export const updateDocumentFile = async (
             data: {
                 ...(title && { title }),
                 ...(content && { content }),
-                ...(newFileId && { fileId: newFileId }),
-            },
+                ...(newFileId && { fileId: newFileId })
+            }
         });
 
         // 업데이트된 Document 반환
         const updatedDocument = await tx.document.findUnique({
             where: { id: documentId },
-            include: { file: true },
+            include: { file: true }
         });
 
         return updatedDocument;
     });
 };
-
